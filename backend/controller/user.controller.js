@@ -6,6 +6,11 @@ const register = async (req, res) =>{
     try {
         const {username, email, password} = req.body;
 
+        const data = await User.findOne({email:email});
+        if(data){
+            return res.status(400).json({message:"User already exists"});
+        }
+
         const hashPass = await argon2.hash(password);
 
         const newUser = new User({
@@ -26,9 +31,9 @@ const register = async (req, res) =>{
 
 const login = async (req, res) =>{
     try {
-        const {email, password} = req.body;
+        const {username, password} = req.body;
 
-        const userData = await User.findOne({email:email});
+        const userData = await User.findOne({username:username});
         if(!userData){
             return res.status(401).json({message:"Username or Password is invalid"})
         }
